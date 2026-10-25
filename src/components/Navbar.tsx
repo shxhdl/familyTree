@@ -215,7 +215,7 @@ export default function Navbar() {
               </button>
             </div>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div className="hidden-mobile" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Link to="/auth" className="btn btn-secondary btn-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 تسجيل الدخول
               </Link>
@@ -229,10 +229,10 @@ export default function Navbar() {
           <button
             className="btn btn-ghost btn-icon mobile-only"
             onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Menu"
-            style={{ display: 'none' }}
+            aria-label="القائمة"
+            style={{ width: 38, height: 38, borderRadius: 'var(--radius-md)', padding: 0 }}
           >
-            {menuOpen ? <X size={20} /> : <Menu size={20} />}
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </div>
@@ -241,24 +241,108 @@ export default function Navbar() {
       {menuOpen && (
         <div style={{
           background: 'var(--color-surface)',
-          borderBottom: '1px solid var(--color-border)',
+          borderBottom: '2px solid var(--color-border)',
           padding: '16px 20px',
           display: 'flex',
           flexDirection: 'column',
           gap: 12,
+          boxShadow: 'var(--shadow-md)',
+          animation: 'slideUp 0.2s ease',
         }}>
-          <Link to="/" onClick={() => setMenuOpen(false)} className="navbar-link">الرئيسية</Link>
+          <Link
+            to="/"
+            onClick={() => setMenuOpen(false)}
+            className={`navbar-link ${location.pathname === '/' ? 'active' : ''}`}
+            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', fontSize: '1rem', fontWeight: 700 }}
+          >
+            <TreePine size={18} />
+            <span>الرئيسية</span>
+          </Link>
+
           {user && (
-            <Link to="/my-trees" onClick={() => setMenuOpen(false)} className="navbar-link">أشجاري</Link>
-          )}
-          {authUser?.is_admin && (
-            <Link to="/admin" onClick={() => setMenuOpen(false)} className="navbar-link" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Shield size={16} />
-              <span>لوحة الإدارة</span>
-              {pendingRequestsCount > 0 && (
-                <span className="badge badge-red" style={{ fontSize: '0.7rem' }}>{pendingRequestsCount} معلق</span>
+            <Link
+              to="/my-trees"
+              onClick={() => setMenuOpen(false)}
+              className={`navbar-link ${location.pathname === '/my-trees' ? 'active' : ''}`}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', fontSize: '1rem', fontWeight: 700 }}
+            >
+              <Compass size={18} />
+              <span>أشجاري</span>
+              {memberRequestsCount > 0 && (
+                <span className="badge badge-orange" style={{ fontSize: '0.72rem', marginRight: 'auto' }}>
+                  {memberRequestsCount} طلب
+                </span>
               )}
             </Link>
+          )}
+
+          {authUser?.is_admin && (
+            <Link
+              to="/admin"
+              onClick={() => setMenuOpen(false)}
+              className={`navbar-link ${location.pathname.startsWith('/admin') ? 'active' : ''}`}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', fontSize: '1rem', fontWeight: 700 }}
+            >
+              <Shield size={18} />
+              <span>لوحة الإدارة</span>
+              {(pendingRequestsCount > 0 || pendingPublishCount > 0) && (
+                <span className="badge badge-red" style={{ fontSize: '0.72rem', marginRight: 'auto' }}>
+                  {pendingRequestsCount + pendingPublishCount} تنبيه
+                </span>
+              )}
+            </Link>
+          )}
+
+          <div style={{ height: 1, background: 'var(--color-border)', margin: '4px 0' }} />
+
+          {user ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 4px' }}>
+                <div style={{
+                  width: 38, height: 38, borderRadius: '50%',
+                  background: 'var(--color-primary)', color: 'white',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontWeight: 800, fontSize: '0.95rem'
+                }}>
+                  {displayName.charAt(0).toUpperCase()}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--color-text-main)' }}>
+                    {displayName}
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                    {authUser?.is_admin ? 'مسؤول النظام' : 'عضو مسجل'}
+                  </div>
+                </div>
+              </div>
+              <button
+                className="btn btn-secondary"
+                onClick={() => { setMenuOpen(false); handleSignOut(); }}
+                style={{ width: '100%', justifyContent: 'center', gap: 8, color: 'var(--color-danger)' }}
+              >
+                <LogOut size={16} />
+                <span>تسجيل الخروج</span>
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <Link
+                to="/auth"
+                onClick={() => setMenuOpen(false)}
+                className="btn btn-secondary"
+                style={{ width: '100%', justifyContent: 'center' }}
+              >
+                تسجيل الدخول
+              </Link>
+              <Link
+                to="/auth?tab=signup"
+                onClick={() => setMenuOpen(false)}
+                className="btn btn-primary"
+                style={{ width: '100%', justifyContent: 'center' }}
+              >
+                إنشاء حساب جديد
+              </Link>
+            </div>
           )}
         </div>
       )}

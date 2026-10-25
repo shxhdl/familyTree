@@ -67,7 +67,10 @@ const bluePalettes = [
 export default function FamilyTreeChart({ treeId, persons, isAdmin, onEditMember, onAddChild }: Props) {
   const [selectedBranch, setSelectedBranch] = useState<string>('all');
   const [layoutOrientation, setLayoutOrientation] = useState<'horizontal' | 'vertical'>('horizontal');
-  const [zoomLevel, setZoomLevel] = useState<number>(0.9);
+  const [zoomLevel, setZoomLevel] = useState<number>(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 640) return 0.65;
+    return 0.9;
+  });
   const [collapsedNodes, setCollapsedNodes] = useState<Set<string>>(new Set());
   const [exportingPdf, setExportingPdf] = useState(false);
   const [pdfSuccess, setPdfSuccess] = useState(false);
@@ -568,17 +571,20 @@ export default function FamilyTreeChart({ treeId, persons, isAdmin, onEditMember
         </div>
       </div>
 
-      {/* Branch Filter Tabs Row */}
+      {/* Branch Filter Tabs Row - Swipable on mobile */}
       <div className="tree-toolbar-controls" style={{
-        padding: '10px 20px',
+        padding: '10px 14px',
         background: '#ffffff',
         borderBottom: '1px solid #e2e8f0',
         display: 'flex',
         alignItems: 'center',
-        gap: 6,
-        flexWrap: 'wrap',
+        gap: 8,
+        overflowX: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        flexWrap: 'nowrap',
+        whiteSpace: 'nowrap',
       }}>
-        <span style={{ fontFamily: 'Tajawal, sans-serif', fontWeight: 800, fontSize: '0.85rem', color: '#1e3a8a', display: 'flex', alignItems: 'center', gap: 6 }}>
+        <span style={{ fontFamily: 'Tajawal, sans-serif', fontWeight: 800, fontSize: '0.85rem', color: '#1e3a8a', display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
           <Layers size={15} color="#1d4ed8" />
           تصفية الفروع:
         </span>
@@ -592,7 +598,8 @@ export default function FamilyTreeChart({ treeId, persons, isAdmin, onEditMember
             border: '1.5px solid #93c5fd',
             fontWeight: 700,
             fontSize: '0.78rem',
-            padding: '3px 12px',
+            padding: '4px 12px',
+            flexShrink: 0,
           }}
         >
           🌳 شجرة العائلة كاملة ({persons.length})
@@ -612,7 +619,8 @@ export default function FamilyTreeChart({ treeId, persons, isAdmin, onEditMember
                 color: isSelected ? '#ffffff' : palette.dark,
                 fontWeight: 700,
                 fontSize: '0.78rem',
-                padding: '3px 12px',
+                padding: '4px 12px',
+                flexShrink: 0,
                 boxShadow: isSelected ? '0 2px 8px rgba(37, 99, 235, 0.25)' : 'none',
               }}
             >
@@ -657,10 +665,12 @@ export default function FamilyTreeChart({ treeId, persons, isAdmin, onEditMember
           position: 'relative',
           overflowX: 'auto',
           overflowY: 'auto',
-          padding: '50px 30px',
+          WebkitOverflowScrolling: 'touch',
+          touchAction: 'pan-x pan-y',
+          padding: '40px 16px',
           background: 'radial-gradient(#93c5fd 1.2px, #f8faff 1.2px)',
           backgroundSize: '24px 24px',
-          minHeight: 650,
+          minHeight: 520,
           cursor: layoutOrientation === 'horizontal' ? (isDragging ? 'grabbing' : 'grab') : 'default',
           userSelect: isDragging ? 'none' : 'auto',
           direction: 'rtl',
