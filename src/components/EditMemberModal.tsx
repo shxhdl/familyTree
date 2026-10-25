@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { X, Save, AlertCircle, CheckCircle, Users, User, Plus, Trash2, ListPlus, Sparkles } from 'lucide-react';
+import ImageUploadInput from '@/components/ImageUploadInput';
 import type { Person } from '@/types';
 
 interface Props {
@@ -71,6 +72,7 @@ export default function EditMemberModal({
     bio_ar: '',
     phone: '',
     location: '',
+    photo_url: '',
   });
 
   // Bulk Add Children State
@@ -145,6 +147,7 @@ export default function EditMemberModal({
         bio_ar: person.bio_ar || '',
         phone: person.phone || '',
         location: person.location || '',
+        photo_url: person.photo_url || '',
       });
       setMode('single');
     } else {
@@ -249,6 +252,7 @@ export default function EditMemberModal({
         bio_ar: form.bio_ar.trim() || null,
         phone: form.phone.trim() || null,
         location: form.location.trim() || null,
+        photo_url: form.photo_url.trim() || null,
         updated_at: new Date().toISOString(),
       };
 
@@ -730,6 +734,14 @@ export default function EditMemberModal({
               )}
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                <div style={{ gridColumn: 'span 2' }}>
+                  <ImageUploadInput
+                    value={form.photo_url}
+                    onChange={(url) => setForm(prev => ({ ...prev, photo_url: url }))}
+                    label="الصورة الشخصية (من ألبوم الكاميرا أو جهازك)"
+                  />
+                </div>
+
                 <div className="form-group" style={{ gridColumn: 'span 2' }}>
                   <label className="form-label required">الاسم الكامل (بالعربية)</label>
                   <input

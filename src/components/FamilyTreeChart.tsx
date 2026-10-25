@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Users, ChevronDown, ChevronUp, ZoomIn, ZoomOut, RotateCcw, 
+  Users, User, ChevronDown, ChevronUp, ZoomIn, ZoomOut, RotateCcw, 
   Pencil, Crown, Plus, Move, Layers, Maximize2, Minimize2,
   Download, Printer, Check
 } from 'lucide-react';
@@ -779,40 +779,29 @@ export default function FamilyTreeChart({ treeId, persons, isAdmin, onEditMember
                 minWidth: 300,
                 position: 'relative',
               }}>
-                {/* Crown Gold Badge */}
-                <div
-                  className="chart-print-hidden no-print"
-                  style={{
-                    position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)',
-                  background: 'linear-gradient(135deg, #fef08a 0%, #facc15 100%)',
-                  color: '#713f12',
-                  padding: '3px 14px',
-                  borderRadius: 'var(--radius-full)',
-                  fontSize: '0.75rem',
-                  fontWeight: 800,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 5,
-                  boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
-                  whiteSpace: 'nowrap',
-                }}>
-                  <Crown size={13} /> الجيل 1 • رأس الشجرة (الجد الأكبر)
-                </div>
-
-                {/* Avatar Icon */}
+                {/* Photo or Avatar Icon */}
                 <div style={{
-                  width: 50,
-                  height: 50,
+                  width: 52,
+                  height: 52,
                   borderRadius: '50%',
                   background: 'rgba(255,255,255,0.18)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '1.5rem',
-                  border: '2px solid rgba(255,255,255,0.35)',
+                  border: '2.5px solid rgba(255,255,255,0.45)',
                   flexShrink: 0,
+                  overflow: 'hidden',
+                  boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
                 }}>
-                  👑
+                  {rootPerson.photo_url ? (
+                    <img
+                      src={rootPerson.photo_url}
+                      alt={rootPerson.full_name_ar}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    <User size={26} color="#ffffff" />
+                  )}
                 </div>
 
                 <div style={{ textAlign: 'right', flex: 1 }}>
@@ -965,61 +954,85 @@ export default function FamilyTreeChart({ treeId, persons, isAdmin, onEditMember
                       position: 'relative',
                       direction: 'rtl',
                     }}>
-                      {/* Top Branch Tag with Pink Female Accent & Generation 2 */}
+                      {/* Top Branch Count Tag */}
                       <div
                         className="chart-print-hidden no-print"
                         style={{
-                          background: '#fdf2f8',
-                        color: '#db2777',
-                        border: '1px solid #fbcfe8',
-                        padding: '2px 10px',
-                        borderRadius: 'var(--radius-full)',
-                        fontSize: '0.72rem',
-                        fontWeight: 800,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 5,
-                        boxShadow: '0 2px 4px rgba(0,0,0,0.06)',
-                      }}>
-                        <span>{branch.wife.id === 'direct' ? 'الأبناء المباشرون' : `👰 الجيل 2 • الزوجة ${branchIndex + 1} (أنثى)`}</span>
-                        <span>•</span>
-                        <span style={{ color: '#9d174d' }}>{branch.totalCount} فرد</span>
+                          background: 'rgba(255, 255, 255, 0.20)',
+                          color: '#ffffff',
+                          border: '1px solid rgba(255, 255, 255, 0.35)',
+                          padding: '2px 10px',
+                          borderRadius: 'var(--radius-full)',
+                          fontSize: '0.74rem',
+                          fontWeight: 800,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 5,
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.06)',
+                        }}>
+                        <span>{branch.totalCount} فرد</span>
                       </div>
 
-                      {/* Wife Name (Unclipped and Clear) */}
-                      <div style={{ width: '100%' }}>
-                        {branch.wife.id === 'direct' ? (
-                          <div
-                            style={{
-                              fontFamily: 'Tajawal, sans-serif',
-                              fontWeight: 800,
-                              fontSize: '1.05rem',
-                              color: '#ffffff',
-                              lineHeight: 1.35,
-                              wordBreak: 'break-word',
-                            }}
-                          >
-                            {branch.wife.full_name_ar}
+                      {/* Wife Photo and Name */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, width: '100%' }}>
+                        {branch.wife.id !== 'direct' && (
+                          <div style={{
+                            width: 38,
+                            height: 38,
+                            borderRadius: '50%',
+                            background: 'rgba(255, 255, 255, 0.22)',
+                            border: '1.5px solid rgba(255, 255, 255, 0.45)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            overflow: 'hidden',
+                            flexShrink: 0,
+                          }}>
+                            {branch.wife.photo_url ? (
+                              <img
+                                src={branch.wife.photo_url}
+                                alt={branch.wife.full_name_ar}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                              />
+                            ) : (
+                              <User size={18} color="#ffffff" />
+                            )}
                           </div>
-                        ) : (
-                          <Link
-                            to={`/trees/${treeId}/member/${branch.wife.id}`}
-                            style={{
-                              fontFamily: 'Tajawal, sans-serif',
-                              fontWeight: 800,
-                              fontSize: '1.05rem',
-                              color: '#ffffff',
-                              textDecoration: 'none',
-                              display: 'block',
-                              lineHeight: 1.35,
-                              wordBreak: 'break-word',
-                            }}
-                          >
-                            {branch.wife.full_name_ar}
-                          </Link>
                         )}
-                        <div style={{ fontSize: '0.74rem', color: '#e0f2fe', marginTop: 2 }}>
-                          {branch.childrenNodes.length} من الأبناء المباشرين
+                        <div style={{ textAlign: branch.wife.id === 'direct' ? 'center' : 'right' }}>
+                          {branch.wife.id === 'direct' ? (
+                            <div
+                              style={{
+                                fontFamily: 'Tajawal, sans-serif',
+                                fontWeight: 800,
+                                fontSize: '1.05rem',
+                                color: '#ffffff',
+                                lineHeight: 1.35,
+                                wordBreak: 'break-word',
+                              }}
+                            >
+                              {branch.wife.full_name_ar}
+                            </div>
+                          ) : (
+                            <Link
+                              to={`/trees/${treeId}/member/${branch.wife.id}`}
+                              style={{
+                                fontFamily: 'Tajawal, sans-serif',
+                                fontWeight: 800,
+                                fontSize: '1.05rem',
+                                color: '#ffffff',
+                                textDecoration: 'none',
+                                display: 'block',
+                                lineHeight: 1.35,
+                                wordBreak: 'break-word',
+                              }}
+                            >
+                              {branch.wife.full_name_ar}
+                            </Link>
+                          )}
+                          <div style={{ fontSize: '0.74rem', color: '#e0f2fe', marginTop: 2 }}>
+                            {branch.childrenNodes.length} من الأبناء المباشرين
+                          </div>
                         </div>
                       </div>
 
@@ -1525,51 +1538,19 @@ function SpineNode({
           flexShrink: 0,
         }}
       >
-        {/* Top Header Row: Generation Badge, Gender Pill, Admin Capsule */}
-        <div
-          className="chart-print-hidden no-print"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            width: '100%',
-            gap: 4,
-            marginBottom: 4,
-          }}
-        >
-          {/* Generation Badge matching user sketch (الجيل 3 / الجيل 4 / الجيل 5) */}
-          <span style={{
-            fontSize: '0.64rem',
-            fontWeight: 800,
-            fontFamily: 'Tajawal, sans-serif',
-            padding: '1px 6px',
-            borderRadius: 'var(--radius-full)',
-            background: '#eff6ff',
-            color: palette.primary,
-            border: `1px solid ${palette.border}`,
-            whiteSpace: 'nowrap',
-          }}>
-            الجيل {depth}
-          </span>
-
-          {/* Gender Indicator: Pink accent for female, blue for male */}
-          <span style={{
-            fontSize: '0.64rem',
-            fontWeight: 800,
-            padding: '1px 5px',
-            borderRadius: 'var(--radius-full)',
-            background: isMale ? '#e0f2fe' : '#fdf2f8',
-            color: isMale ? '#0284c7' : '#db2777',
-            border: `1px solid ${isMale ? '#bae6fd' : '#fbcfe8'}`,
-            whiteSpace: 'nowrap',
-          }}>
-            {isMale ? '♂ ذكر' : '♀ أنثى'}
-          </span>
-
-          {/* Admin Capsule */}
-          {isAdmin && (
+        {/* Admin Controls (Pencil and Add) */}
+        {isAdmin && (
+          <div
+            className="chart-interactive-control no-print"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              width: '100%',
+              marginBottom: 4,
+            }}
+          >
             <div
-              className="chart-interactive-control no-print"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -1623,58 +1604,61 @@ function SpineNode({
                 </button>
               )}
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Clear Role Badge (الوالد / الوالدة vs ابن / ابنة) */}
-        <div
-          className="chart-print-hidden no-print"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 4,
-          padding: '2px 8px',
-          borderRadius: 'var(--radius-full)',
-          fontSize: '0.70rem',
-          fontWeight: 800,
-          fontFamily: 'Tajawal, sans-serif',
-          background: isParent
-            ? (isMale ? '#dbeafe' : '#fce7f3')
-            : (isMale ? '#f8fafc' : '#fff1f2'),
-          color: isParent
-            ? (isMale ? '#1e40af' : '#9d174d')
-            : (isMale ? '#475569' : '#e11d48'),
-          border: `1px solid ${isParent ? (isMale ? '#93c5fd' : '#fbcfe8') : (isMale ? '#e2e8f0' : '#ffe4e6')}`,
-          margin: '2px 0 4px 0',
-          whiteSpace: 'nowrap',
+        {/* Person Photo & Full Arabic Name */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          width: '100%',
         }}>
-          {isParent
-            ? (isMale ? '👨‍👧‍👦 الوالد' : '👩‍👧‍👦 الوالدة')
-            : (isMale ? '👦 ابن' : '👧 ابنة')
-          }
-        </div>
+          {/* Circular Photo from Camera Roll or clean avatar */}
+          <div style={{
+            width: 34,
+            height: 34,
+            borderRadius: '50%',
+            background: isMale ? '#e0f2fe' : '#fdf2f8',
+            border: `1.5px solid ${isMale ? '#93c5fd' : '#fbcfe8'}`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+            flexShrink: 0,
+            boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+          }}>
+            {person.photo_url ? (
+              <img
+                src={person.photo_url}
+                alt={person.full_name_ar}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              <User size={18} color={isMale ? '#0284c7' : '#db2777'} />
+            )}
+          </div>
 
-        {/* Full Arabic Name: 100% visible, natural wrapping, zero clipping, no ellipsis */}
-        <Link
-          to={`/trees/${treeId}/member/${person.id}`}
-          style={{
-            fontFamily: 'Tajawal, sans-serif',
-            fontWeight: 800,
-            fontSize: '0.88rem',
-            color: '#0f172a',
-            textDecoration: 'none',
-            lineHeight: 1.35,
-            display: 'block',
-            textAlign: 'center',
-            whiteSpace: 'normal',
-            wordBreak: 'break-word',
-            width: '100%',
-            padding: '2px 2px',
-          }}
-          title={person.full_name_ar}
-        >
-          {person.full_name_ar}
-        </Link>
+          {/* Full Arabic Name */}
+          <Link
+            to={`/trees/${treeId}/member/${person.id}`}
+            style={{
+              fontFamily: 'Tajawal, sans-serif',
+              fontWeight: 800,
+              fontSize: '0.88rem',
+              color: '#0f172a',
+              textDecoration: 'none',
+              lineHeight: 1.35,
+              textAlign: 'right',
+              whiteSpace: 'normal',
+              wordBreak: 'break-word',
+              flex: 1,
+            }}
+            title={person.full_name_ar}
+          >
+            {person.full_name_ar}
+          </Link>
+        </div>
 
         {/* Expand/Collapse Toggle Button (if has children) */}
         {hasChildren && (
@@ -1779,53 +1763,29 @@ function VerticalTreeNode({
       }}>
         {/* Person details */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
-          {/* Generation & Role & Gender badges */}
-          <div
-            className="chart-print-hidden no-print"
-            style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}
-          >
-            {/* Generation Badge */}
-            <span style={{
-              fontSize: '0.68rem',
-              fontWeight: 800,
-              padding: '2px 7px',
-              borderRadius: 'var(--radius-full)',
-              background: '#eff6ff',
-              color: palette.primary,
-              border: `1px solid ${palette.border}`,
-            }}>
-              الجيل {depth}
-            </span>
-
-            {/* Role Badge */}
-            <span style={{
-              fontSize: '0.68rem',
-              fontWeight: 800,
-              padding: '2px 7px',
-              borderRadius: 'var(--radius-full)',
-              background: hasChildren
-                ? (isMale ? '#dbeafe' : '#fce7f3')
-                : (isMale ? '#f8fafc' : '#fff1f2'),
-              color: hasChildren
-                ? (isMale ? '#1e40af' : '#9d174d')
-                : (isMale ? '#475569' : '#e11d48'),
-              border: `1px solid ${hasChildren ? (isMale ? '#93c5fd' : '#fbcfe8') : '#e2e8f0'}`,
-            }}>
-              {hasChildren ? (isMale ? '👨‍👧‍👦 الوالد' : '👩‍👧‍👦 الوالدة') : (isMale ? '👦 ابن' : '👧 ابنة')}
-            </span>
-
-            {/* Gender pill */}
-            <span style={{
-              fontSize: '0.68rem',
-              padding: '2px 7px',
-              borderRadius: 'var(--radius-full)',
-              background: isMale ? '#eff6ff' : '#fdf2f8',
-              color: isMale ? '#1d4ed8' : '#db2777',
-              border: `1px solid ${isMale ? '#bfdbfe' : '#fbcfe8'}`,
-              fontWeight: 800,
-            }}>
-              {isMale ? '♂ ذكر' : '♀ أنثى'}
-            </span>
+          {/* Member Photo */}
+          <div style={{
+            width: 36,
+            height: 36,
+            borderRadius: '50%',
+            background: isMale ? '#e0f2fe' : '#fdf2f8',
+            border: `1.5px solid ${isMale ? '#93c5fd' : '#fbcfe8'}`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+            flexShrink: 0,
+            boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+          }}>
+            {person.photo_url ? (
+              <img
+                src={person.photo_url}
+                alt={person.full_name_ar}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              <User size={18} color={isMale ? '#0284c7' : '#db2777'} />
+            )}
           </div>
 
           <div style={{ minWidth: 0, flex: 1 }}>
